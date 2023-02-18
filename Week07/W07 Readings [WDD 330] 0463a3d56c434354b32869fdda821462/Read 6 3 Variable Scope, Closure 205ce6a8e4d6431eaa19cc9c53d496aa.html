@@ -1,0 +1,890 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Read 6.3 Variable Scope, Closure</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	text-indent: -1.7em;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(55, 53, 47, 1);
+}
+.highlight-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.highlight-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.highlight-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(120, 119, 116, 1);
+	fill: rgba(120, 119, 116, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(212, 76, 71, 1);
+	fill: rgba(212, 76, 71, 1);
+}
+.block-color-gray_background {
+	background: rgba(241, 241, 239, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(244, 240, 247, 0.8);
+}
+.block-color-pink_background {
+	background: rgba(249, 238, 243, 0.8);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-pink { background-color: rgba(245, 224, 233, 1); }
+.select-value-color-purple { background-color: rgba(232, 222, 238, 1); }
+.select-value-color-green { background-color: rgba(219, 237, 219, 1); }
+.select-value-color-gray { background-color: rgba(227, 226, 224, 1); }
+.select-value-color-opaquegray { background-color: rgba(255, 255, 255, 0.0375); }
+.select-value-color-orange { background-color: rgba(250, 222, 201, 1); }
+.select-value-color-brown { background-color: rgba(238, 224, 218, 1); }
+.select-value-color-red { background-color: rgba(255, 226, 221, 1); }
+.select-value-color-yellow { background-color: rgba(253, 236, 200, 1); }
+.select-value-color-blue { background-color: rgba(211, 229, 239, 1); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="205ce6a8-e4d6-431e-aa19-cc9c53d496aa" class="page sans"><header><h1 class="page-title">Read <a href="https://javascript.info/closure">6.3 Variable Scope, Closure</a></h1></header><div class="page-body"><figure id="c07385a8-c385-4181-87e1-8855ca60cf65"><a href="https://javascript.info/closure" class="bookmark source"><div class="bookmark-info"><div class="bookmark-text"><div class="bookmark-title">Variable scope, closure</div></div><div class="bookmark-href"><img src="https://javascript.info/img/favicon/apple-touch-icon-precomposed.png" class="icon bookmark-icon"/>https://javascript.info/closure</div></div><img src="https://javascript.info/img/site_preview_en_1200x630.png" class="bookmark-image"/></a></figure><h3 id="43d2c49f-c63c-41c3-9721-d0c18fd91977" class=""><strong>Variable scope, closure</strong></h3><p id="d11010a2-32c8-415a-8c85-8947fedd255f" class="">JavaScript is a very function-oriented language. It gives us a lot of freedom. A function can be created at any moment, passed as an argument to another function, and then called from a totally different place of code later.</p><p id="37dd8c0b-5141-4677-9b74-ad682da6dcaf" class="">We already know that a function can access variables outside of it (“outer” variables).</p><p id="45d9d092-43a6-4c76-938b-b9d9cbc01f60" class="">But what happens if outer variables change since a function is created? Will the function get newer values or the old ones?</p><p id="c3e137fe-5594-475e-80c3-a0cd132903bb" class="">And what if a function is passed along as an argument and called from another place of code, will it get access to outer variables at the new place?</p><p id="6b476df5-2a19-4aca-a51e-f311f5fb3bcc" class="">Let’s expand our knowledge to understand these scenarios and more complex ones.</p><p id="fad0b356-3593-4367-88c4-57742f5e9a8d" class=""><strong>We’ll talk about </strong><code><strong>let/const</strong></code><strong> variables here</strong></p><p id="8c6ddc2b-ebe5-4bb8-85f8-b9c682f681c0" class="">In JavaScript, there are 3 ways to declare a variable: <code>let</code>, <code>const</code> (the modern ones), and <code>var</code> (the remnant of the past).</p><ul id="10e5c325-b1ab-47fa-94cb-de170b6e2bca" class="bulleted-list"><li style="list-style-type:disc">In this article we’ll use <code>let</code> variables in examples.</li></ul><ul id="da62d1c2-17c3-4834-b04c-99f432a1ca4c" class="bulleted-list"><li style="list-style-type:disc">Variables, declared with <code>const</code>, behave the same, so this article is about <code>const</code> too.</li></ul><ul id="00e5c63e-244a-40ba-ae0a-983f94c50dad" class="bulleted-list"><li style="list-style-type:disc">The old <code>var</code> has some notable differences, they will be covered in the article <a href="https://javascript.info/var">The old &quot;var&quot;</a>.</li></ul><h1 id="36928e5e-60c5-4293-8427-74ff299eb009" class=""><a href="https://javascript.info/closure#code-blocks">Code blocks</a></h1><p id="05843a60-3a5e-45a5-a828-60465224ba57" class="">If a variable is declared inside a code block <code>{...}</code>, it’s only visible inside that block.</p><p id="c3ad2425-ded5-4b23-84f5-92ceaa8f1e59" class="">For example:</p><p id="5d3bfe19-ad34-49f3-8917-f8ac9f6110c9" class=""><code>{
+  // do some job with local variables that should not be seen outside
+
+  let message = &quot;Hello&quot;; // only visible in this block
+
+  alert(message); // Hello
+}
+
+alert(message); // Error: message is not defined</code></p><p id="ebd2254e-bfaf-432d-952e-b7fff4de806b" class="">We can use this to isolate a piece of code that does its own task, with variables that only belong to it:</p><p id="cf623f31-8cbc-405b-bf0c-9da427775a7b" class=""><code>{
+  // show message
+  let message = &quot;Hello&quot;;
+  alert(message);
+}
+
+{
+  // show another message
+  let message = &quot;Goodbye&quot;;
+  alert(message);
+}</code></p><p id="69c0fe0b-9d4f-4ab9-8547-65dd5f4e652e" class=""><strong>There’d be an error without blocks</strong></p><p id="2a9c02c1-95ea-4bb1-bec6-e44f60b05970" class="">Please note, without separate blocks there would be an error, if we use <code>let</code> with the existing variable name:</p><p id="96b5c64b-53d2-41c0-88b9-bfefb4bb6243" class=""><code>// show message
+let message = &quot;Hello&quot;;
+alert(message);
+
+// show another message
+</code><code><em>let message = &quot;Goodbye&quot;; // Error: variable already declared</em></code><code>alert(message);</code></p><p id="99979bad-576b-45a2-9197-a6e23c471aba" class="">For <code>if</code>, <code>for</code>, <code>while</code> and so on, variables declared in <code>{...}</code> are also only visible inside:</p><p id="1c66dcf5-9ac2-43ec-a561-02b0e8250200" class=""><code>if (true) {
+  let phrase = &quot;Hello!&quot;;
+
+  alert(phrase); // Hello!
+}
+
+alert(phrase); // Error, no such variable!</code></p><p id="22c97166-66a0-4624-887d-667cb4de58ff" class="">Here, after <code>if</code> finishes, the <code>alert</code> below won’t see the <code>phrase</code>, hence the error.</p><p id="2179e2f1-60fe-4728-8074-ccf66d99a695" class="">That’s great, as it allows us to create block-local variables, specific to an <code>if</code> branch.</p><p id="2b120cc2-7e7e-4e55-bba6-0334e907c2e6" class="">The similar thing holds true for <code>for</code> and <code>while</code> loops:</p><p id="bf31fc3e-7c96-4d88-a8f3-c2d08d393cab" class=""><code>for (let i = 0; i &lt; 3; i++) {
+  // the variable i is only visible inside this for
+  alert(i); // 0, then 1, then 2
+}
+
+alert(i); // Error, no such variable</code></p><p id="09015ff2-575a-47ca-aa6a-6a4506692a24" class="">Visually, <code>let i</code> is outside of <code>{...}</code>. But the <code>for</code> construct is special here: the variable, declared inside it, is considered a part of the block.</p><h1 id="d6ca4387-21b5-4e13-a874-4f452268e6e8" class=""><a href="https://javascript.info/closure#nested-functions">Nested functions</a></h1><p id="9d84cc79-a600-414d-ada1-25ee18c038db" class="">A function is called “nested” when it is created inside another function.</p><p id="7b68116d-55d7-4ab5-b256-552545234394" class="">It is easily possible to do this with JavaScript.</p><p id="2671f8b1-15fe-4784-87c4-b99405298607" class="">We can use it to organize our code, like this:</p><p id="8ae5b2a4-72e1-46d1-916b-274a02dff917" class=""><code>function sayHiBye(firstName, lastName) {
+
+  // helper nested function to use below
+  function getFullName() {
+    return firstName + &quot; &quot; + lastName;
+  }
+
+  alert( &quot;Hello, &quot; + getFullName() );
+  alert( &quot;Bye, &quot; + getFullName() );
+
+}</code></p><p id="f294ae1c-1504-47d3-b707-a97c3a49237f" class="">Here the <em>nested</em> function <code>getFullName()</code> is made for convenience. It can access the outer variables and so can return the full name. Nested functions are quite common in JavaScript.</p><p id="3cdc20a2-0e5f-418c-bc2e-f1802e799a45" class="">What’s much more interesting, a nested function can be returned: either as a property of a new object or as a result by itself. It can then be used somewhere else. No matter where, it still has access to the same outer variables.</p><p id="121f143a-2a0e-473f-bf38-a0cda1423c63" class="">Below, <code>makeCounter</code> creates the “counter” function that returns the next number on each invocation:</p><p id="329c4d5c-feff-45cf-a266-e78b7db66a75" class=""><code>function makeCounter() {
+  let count = 0;
+
+  return function() {
+    return count++;
+  };
+}
+
+let counter = makeCounter();
+
+alert( counter() ); // 0
+alert( counter() ); // 1
+alert( counter() ); // 2</code></p><p id="5b63731d-4d11-4fda-a347-8a1220bac53a" class="">Despite being simple, slightly modified variants of that code have practical uses, for instance, as a <a href="https://en.wikipedia.org/wiki/Pseudorandom_number_generator">random number generator</a> to generate random values for automated tests.</p><p id="f8bf69b5-5494-4339-8bd4-fc4f0bacd232" class="">How does this work? If we create multiple counters, will they be independent? What’s going on with the variables here?</p><p id="604fca9c-8898-48c8-99dc-7de6f53f91d9" class="">Understanding such things is great for the overall knowledge of JavaScript and beneficial for more complex scenarios. So let’s go a bit in-depth.</p><h1 id="fb5405d9-8d34-4bb6-a54a-0b7e00541950" class=""><a href="https://javascript.info/closure#lexical-environment">Lexical Environment</a></h1><p id="76600636-a51a-4974-8cd7-2a73e0ec2007" class=""><strong>Here be dragons!</strong></p><p id="4ffb950d-8488-4939-80fa-e4f893db5dc3" class="">The in-depth technical explanation lies ahead.</p><p id="eede1210-383e-49ce-a2fb-9d123f1bbe6e" class="">As far as I’d like to avoid low-level language details, any understanding without them would be lacking and incomplete, so get ready.</p><p id="9082d343-78ea-4026-942e-cfe3b8bf2956" class="">For clarity, the explanation is split into multiple steps.</p><h3 id="62966d18-fbb9-46e5-9f00-41895bbafab0" class=""><a href="https://javascript.info/closure#step-1-variables">Step 1. Variables</a></h3><p id="9b36eed5-5e94-4582-9166-4f74df3c8fa4" class="">In JavaScript, every running function, code block <code>{...}</code>, and the script as a whole have an internal (hidden) associated object known as the <em>Lexical Environment</em>.</p><p id="d574d552-d389-48a3-b508-98ff01fec825" class="">The Lexical Environment object consists of two parts:</p><ol type="1" id="ced79667-5dcb-4496-9cbc-9958b710130e" class="numbered-list" start="1"><li><em>Environment Record</em> – an object that stores all local variables as its properties (and some other information like the value of <code>this</code>).</li></ol><ol type="1" id="7df2dcfe-cc67-4fa4-94ac-4411a091c4dd" class="numbered-list" start="2"><li>A reference to the <em>outer lexical environment</em>, the one associated with the outer code.</li></ol><p id="6feb607e-f6a5-43e9-bd66-3a151627fad9" class=""><strong>A “variable” is just a property of the special internal object, </strong><code><strong>Environment Record</strong></code><strong>. “To get or change a variable” means “to get or change a property of that object”.</strong></p><p id="be5d5dd4-d54d-40a4-9fad-ccaaf62ed095" class="">In this simple code without functions, there is only one Lexical Environment:</p><p id="fb73e06a-9850-4807-9270-578dcde0bd3f" class="">This is the so-called <em>global</em> Lexical Environment, associated with the whole script.</p><p id="44bdc095-9185-45b6-a7ad-993dcdc7fdcd" class="">On the picture above, the rectangle means Environment Record (variable store) and the arrow means the outer reference. The global Lexical Environment has no outer reference, that’s why the arrow points to <code>null</code>.</p><p id="9a3ebaa0-94eb-4742-b8f7-9260d2a64487" class="">As the code starts executing and goes on, the Lexical Environment changes.</p><p id="f11e2863-9d7f-4016-a695-5a345c71ec17" class="">Here’s a little bit longer code:</p><p id="92408223-8f66-4ab3-bc7d-812d52de0a3e" class="">Rectangles on the right-hand side demonstrate how the global Lexical Environment changes during the execution:</p><ol type="1" id="bff68c28-46e4-4901-a050-125d84a2343c" class="numbered-list" start="1"><li>When the script starts, the Lexical Environment is pre-populated with all declared variables.<ul id="8add532e-922b-4036-bc0c-babb02fa5c78" class="bulleted-list"><li style="list-style-type:disc">Initially, they are in the “Uninitialized” state. That’s a special internal state, it means that the engine knows about the variable, but it cannot be referenced until it has been declared with <code>let</code>. It’s almost the same as if the variable didn’t exist.</li></ul></li></ol><ol type="1" id="16b0fa86-6ffa-42ee-9930-7f26fec1bf83" class="numbered-list" start="2"><li>Then <code>let phrase</code> definition appears. There’s no assignment yet, so its value is <code>undefined</code>. We can use the variable from this point forward.</li></ol><ol type="1" id="2c8d6dbc-a9dc-4ae1-b7d0-7b1da0782917" class="numbered-list" start="3"><li><code>phrase</code> is assigned a value.</li></ol><ol type="1" id="31f5fb68-f21e-42ba-9d76-f12c4aa0a674" class="numbered-list" start="4"><li><code>phrase</code> changes the value.</li></ol><p id="85475936-dcdb-4e92-a209-4a68283f479d" class="">Everything looks simple for now, right?</p><ul id="9ada23af-eaf4-4f51-a924-3c0e3ded39d2" class="bulleted-list"><li style="list-style-type:disc">A variable is a property of a special internal object, associated with the currently executing block/function/script.</li></ul><ul id="6f3a52b2-eb40-485f-bda4-a92047993422" class="bulleted-list"><li style="list-style-type:disc">Working with variables is actually working with the properties of that object.</li></ul><p id="073b9e66-c78b-42b0-aec8-2a934a12936a" class=""><strong>Lexical Environment is a specification object</strong></p><p id="52b8bab9-a367-470c-839e-2e57574f8b61" class="">“Lexical Environment” is a specification object: it only exists “theoretically” in the <a href="https://tc39.es/ecma262/#sec-lexical-environments">language specification</a> to describe how things work. We can’t get this object in our code and manipulate it directly.</p><p id="b0134fee-6665-4507-97d6-7bb747b9a24e" class="">JavaScript engines also may optimize it, discard variables that are unused to save memory and perform other internal tricks, as long as the visible behavior remains as described.</p><h3 id="569b4e49-e16b-4b8d-a4ba-6f65cfc6ec06" class=""><a href="https://javascript.info/closure#step-2-function-declarations">Step 2. Function Declarations</a></h3><p id="a89ec8a8-e545-4bfa-b556-00b927766b59" class="">A function is also a value, like a variable.</p><p id="7fff5694-43cd-4e0d-b986-044388a7cb37" class=""><strong>The difference is that a Function Declaration is instantly fully initialized.</strong></p><p id="d8316536-e841-4279-ae73-ed9012345337" class="">When a Lexical Environment is created, a Function Declaration immediately becomes a ready-to-use function (unlike <code>let</code>, that is unusable till the declaration).</p><p id="cdf398d2-9bf9-4702-87d3-c474a7d429ee" class="">That’s why we can use a function, declared as Function Declaration, even before the declaration itself.</p><p id="6fe13bce-99f5-41fa-a1b1-70b7fbf009f5" class="">For example, here’s the initial state of the global Lexical Environment when we add a function:</p><p id="24f5c313-6731-4d9e-9aed-81aff6012a60" class="">Naturally, this behavior only applies to Function Declarations, not Function Expressions where we assign a function to a variable, such as <code>let say = function(name)...</code>.</p><h3 id="f60a5d1b-3d75-43ee-a6f0-6e068f038060" class=""><a href="https://javascript.info/closure#step-3-inner-and-outer-lexical-environment">Step 3. Inner and outer Lexical Environment</a></h3><p id="f79c537b-b224-49a8-b451-5f2759d18fc9" class="">When a function runs, at the beginning of the call, a new Lexical Environment is created automatically to store local variables and parameters of the call.</p><p id="135472e6-5701-4c5e-a587-c049eba6631d" class="">For instance, for <code>say(&quot;John&quot;)</code>, it looks like this (the execution is at the line, labelled with an arrow):</p><p id="c4d8e110-95f5-43d3-98da-aae2c94d5aae" class="">During the function call we have two Lexical Environments: the inner one (for the function call) and the outer one (global):</p><ul id="9f66c901-bfce-4264-ba42-6845f8b45454" class="bulleted-list"><li style="list-style-type:disc">The inner Lexical Environment corresponds to the current execution of <code>say</code>. It has a single property: <code>name</code>, the function argument. We called <code>say(&quot;John&quot;)</code>, so the value of the <code>name</code> is <code>&quot;John&quot;</code>.</li></ul><ul id="c6406125-2ac8-4baa-9d7d-507e0a9c5598" class="bulleted-list"><li style="list-style-type:disc">The outer Lexical Environment is the global Lexical Environment. It has the <code>phrase</code> variable and the function itself.</li></ul><p id="dc82d466-9652-4d07-a320-4e807251b053" class="">The inner Lexical Environment has a reference to the <code>outer</code> one.</p><p id="8c6144c8-20d0-41ed-8191-fafef16d60a9" class=""><strong>When the code wants to access a variable – the inner Lexical Environment is searched first, then the outer one, then the more outer one and so on until the global one.</strong></p><p id="654ede85-4ea0-4643-a274-0f312b0e8e49" class="">If a variable is not found anywhere, that’s an error in strict mode (without <code>use strict</code>, an assignment to a non-existing variable creates a new global variable, for compatibility with old code).</p><p id="4418eafb-3993-4e33-8a0a-eb818b38c159" class="">In this example the search proceeds as follows:</p><ul id="7f9b4839-497a-4f22-ad9f-895e6400eff5" class="bulleted-list"><li style="list-style-type:disc">For the <code>name</code> variable, the <code>alert</code> inside <code>say</code> finds it immediately in the inner Lexical Environment.</li></ul><ul id="46d78e42-a45f-4687-9c1d-68350d8f7c65" class="bulleted-list"><li style="list-style-type:disc">When it wants to access <code>phrase</code>, then there is no <code>phrase</code> locally, so it follows the reference to the outer Lexical Environment and finds it there.</li></ul><h3 id="b7f1067a-e56e-4df4-bbb7-3d420cc3e274" class=""><a href="https://javascript.info/closure#step-4-returning-a-function">Step 4. Returning a function</a></h3><p id="bd460080-8ec3-4d95-9a0b-4278716abb51" class="">Let’s return to the <code>makeCounter</code> example.</p><p id="e14261d8-fe05-4234-9721-7a86f922167b" class=""><code>function makeCounter() {
+  let count = 0;
+
+  return function() {
+    return count++;
+  };
+}
+
+let counter = makeCounter();</code></p><p id="570dc23b-b850-4689-93b3-87414460f218" class="">At the beginning of each <code>makeCounter()</code> call, a new Lexical Environment object is created, to store variables for this <code>makeCounter</code> run.</p><p id="2669a385-c53d-4d4e-88b6-a957c9d8d4ca" class="">So we have two nested Lexical Environments, just like in the example above:</p><p id="2c48bd51-39c4-4fdc-a8e5-d9b17bf582d8" class="">What’s different is that, during the execution of <code>makeCounter()</code>, a tiny nested function is created of only one line: <code>return count++</code>. We don’t run it yet, only create.</p><p id="a65f0027-a45e-41e1-a838-8b439b91e3dc" class="">All functions remember the Lexical Environment in which they were made. Technically, there’s no magic here: all functions have the hidden property named <code>[[Environment]]</code>, that keeps the reference to the Lexical Environment where the function was created:</p><p id="398047fc-6d05-46d4-8b30-dee9097ecde1" class="">So, <code>counter.[[Environment]]</code> has the reference to <code>{count: 0}</code> Lexical Environment. That’s how the function remembers where it was created, no matter where it’s called. The <code>[[Environment]]</code> reference is set once and forever at function creation time.</p><p id="d259429e-423c-4f1e-8a29-8d3c4e5c9327" class="">Later, when <code>counter()</code> is called, a new Lexical Environment is created for the call, and its outer Lexical Environment reference is taken from <code>counter.[[Environment]]</code>:</p><p id="3c9c61cd-0501-4cbc-9887-0bece781ff27" class="">Now when the code inside <code>counter()</code> looks for <code>count</code> variable, it first searches its own Lexical Environment (empty, as there are no local variables there), then the Lexical Environment of the outer <code>makeCounter()</code> call, where it finds and changes it.</p><p id="eb127304-bfb4-4f0e-bacb-ef4a3791d60b" class=""><strong>A variable is updated in the Lexical Environment where it lives.</strong></p><p id="bdbc11d1-19e3-4f39-a45f-07a598b127a6" class="">Here’s the state after the execution:</p><p id="5ca289c6-18b9-402a-9ab7-e19319bfecc7" class="">If we call <code>counter()</code> multiple times, the <code>count</code> variable will be increased to <code>2</code>, <code>3</code> and so on, at the same place.</p><p id="b51cbcc2-b56c-405a-bb26-4ad682afb2dc" class=""><strong>Closure</strong></p><p id="19658b53-d2ea-479b-b6b3-06895f0a015b" class="">There is a general programming term “closure”, that developers generally should know.</p><p id="2ea6ee71-78bd-46e6-96e6-3c5df2d1105a" class="">A <a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">closure</a> is a function that remembers its outer variables and can access them. In some languages, that’s not possible, or a function should be written in a special way to make it happen. But as explained above, in JavaScript, all functions are naturally closures (there is only one exception, to be covered in <a href="https://javascript.info/new-function">The &quot;new Function&quot; syntax</a>).</p><p id="b332f377-5edb-458c-80cd-96d3ce455def" class="">That is: they automatically remember where they were created using a hidden <code>[[Environment]]</code> property, and then their code can access outer variables.</p><p id="d5cecdc7-e66e-433e-9f20-ae0a879cd251" class="">When on an interview, a frontend developer gets a question about “what’s a closure?”, a valid answer would be a definition of the closure and an explanation that all functions in JavaScript are closures, and maybe a few more words about technical details: the <code>[[Environment]]</code> property and how Lexical Environments work.</p><h1 id="621bd5cd-9f14-48df-94ba-0f60241403cc" class=""><a href="https://javascript.info/closure#garbage-collection">Garbage collection</a></h1><p id="3e4adc61-a1f2-48ec-bfc1-234c4f3b47df" class="">Usually, a Lexical Environment is removed from memory with all the variables after the function call finishes. That’s because there are no references to it. As any JavaScript object, it’s only kept in memory while it’s reachable.</p><p id="0abbe9cf-4014-4f61-8dad-8bb4fdd44559" class="">However, if there’s a nested function that is still reachable after the end of a function, then it has <code>[[Environment]]</code> property that references the lexical environment.</p><p id="6d5ed897-6f78-4809-aa4a-2d50f9d04be7" class="">In that case the Lexical Environment is still reachable even after the completion of the function, so it stays alive.</p><p id="0188b9a3-3c3c-49a6-8197-746a5b8a0ea4" class="">For example:</p><p id="758145b4-508f-4222-b5e3-bfad7e4553f6" class=""><code>function f() {
+  let value = 123;
+
+  return function() {
+    alert(value);
+  }
+}
+
+let g = f(); // g.[[Environment]] stores a reference to the Lexical Environment
+// of the corresponding f() call</code></p><p id="29cc6a02-5837-4f36-8793-def2bc826109" class="">Please note that if <code>f()</code> is called many times, and resulting functions are saved, then all corresponding Lexical Environment objects will also be retained in memory. In the code below, all 3 of them:</p><p id="30413ee5-84ee-4b72-8d35-19bd10601aa8" class=""><code>function f() {
+  let value = Math.random();
+
+  return function() { alert(value); };
+}
+
+// 3 functions in array, every one of them links to Lexical Environment
+// from the corresponding f() run
+let arr = [f(), f(), f()];</code></p><p id="7e4574b5-87f7-4daf-b6e3-2c4419e5a6ec" class="">A Lexical Environment object dies when it becomes unreachable (just like any other object). In other words, it exists only while there’s at least one nested function referencing it.</p><p id="78126b5f-98d2-4532-bd4e-37d244e219eb" class="">In the code below, after the nested function is removed, its enclosing Lexical Environment (and hence the <code>value</code>) is cleaned from memory:</p><p id="e93ff8ea-2688-4697-a1de-4bd0b5104461" class=""><code>function f() {
+  let value = 123;
+
+  return function() {
+    alert(value);
+  }
+}
+
+let g = f(); // while g function exists, the value stays in memory
+
+g = null; // ...and now the memory is cleaned up</code></p><h3 id="d7b61bf0-1c0f-4374-9824-0f915e3d9c96" class=""><a href="https://javascript.info/closure#real-life-optimizations">Real-life optimizations</a></h3><p id="a06bf679-26d1-4e2d-bc48-db37d68213e5" class="">As we’ve seen, in theory while a function is alive, all outer variables are also retained.</p><p id="9ea99bd5-a919-48d6-869f-e27e3568f709" class="">But in practice, JavaScript engines try to optimize that. They analyze variable usage and if it’s obvious from the code that an outer variable is not used – it is removed.</p><p id="b0ed77a9-fafc-4fa7-84c4-41fb03a1ef76" class=""><strong>An important side effect in V8 (Chrome, Edge, Opera) is that such variable will become unavailable in debugging.</strong></p><p id="338309ad-3ebf-4b57-b658-6e5169c99056" class="">Try running the example below in Chrome with the Developer Tools open.</p><p id="3c246aba-3890-4148-8605-7e7312dc480c" class="">When it pauses, in the console type <code>alert(value)</code>.</p><p id="14f33a14-ebf0-4dc3-a342-00e4c0ec962f" class=""><code>function f() {
+  let value = Math.random();
+
+  function g() {
+    debugger; // in console: type alert(value); No such variable!
+  }
+
+  return g;
+}
+
+let g = f();
+g();</code></p><p id="4e54a811-1750-4332-b1ad-c4d0dc377273" class="">As you could see – there is no such variable! In theory, it should be accessible, but the engine optimized it out.</p><p id="7e760a58-2b73-47a0-a4ec-58f4f921e7d9" class="">That may lead to funny (if not such time-consuming) debugging issues. One of them – we can see a same-named outer variable instead of the expected one:</p><p id="344bdb6a-0f50-426b-9b82-4af8b4f3ce6a" class=""><code>let value = &quot;Surprise!&quot;;
+
+function f() {
+  let value = &quot;the closest value&quot;;
+
+  function g() {
+    debugger; // in console: type alert(value); Surprise!
+  }
+
+  return g;
+}
+
+let g = f();
+g();</code></p><p id="929171cc-46d4-4d8e-a86a-1d4c08a93a5e" class="">This feature of V8 is good to know. If you are debugging with Chrome/Edge/Opera, sooner or later you will meet it.</p><p id="10824d8f-da65-4739-936c-6c411acabb2f" class="">That is not a bug in the debugger, but rather a special feature of V8. Perhaps it will be changed sometime. You can always check for it by running the examples on this page.</p><h1 id="29aaea01-94e6-4390-a485-a5b3829252d4" class=""><a href="https://javascript.info/closure#tasks">Tasks</a></h1><p id="f5c021e0-ba23-4aed-a1f3-70887a2185ba" class=""><a href="https://javascript.info/closure#does-a-function-pickup-latest-changes"><strong><strong>Does a function pickup latest changes?</strong></strong></a></p><p id="b0960a41-e4aa-423c-938b-5508cee87698" class="">importance: 5</p><p id="4a6627b8-2f03-4e31-b8d7-3b19841ae633" class="">The function sayHi uses an external variable name. When the function runs, which value is it going to use?</p><p id="b96ac631-a3c1-424e-bf0d-7d7377351d44" class=""><code>let name = &quot;John&quot;;
+
+function sayHi() {
+  alert(&quot;Hi, &quot; + name);
+}
+
+name = &quot;Pete&quot;;
+
+sayHi(); // what will it show: &quot;John&quot; or &quot;Pete&quot;?</code></p><p id="36a9924b-4ae5-44fb-9381-ad41a259b5c2" class="">Such situations are common both in browser and server-side development. A function may be scheduled to execute later than it is created, for instance after a user action or a network request.</p><p id="1392bcc3-2ea7-4bba-babb-6cb94f6dba45" class="">So, the question is: does it pick up the latest changes?</p><p id="a44c42d6-9d5e-43a3-ada0-33b1ee1324e4" class="">solution</p><p id="be1d4242-9a39-47d2-b8ef-27a1a8fe97d0" class=""><a href="https://javascript.info/closure#which-variables-are-available"><strong><strong>Which variables are available?</strong></strong></a></p><p id="e883419a-7d99-4f72-8217-b80dfedadf5b" class="">importance: 5</p><p id="27f8047e-bbe0-45da-baca-22b5735b3b59" class="">The function <code>makeWorker</code> below makes another function and returns it. That new function can be called from somewhere else.</p><p id="243ddbc5-2866-4c53-88c6-50857823c08d" class="">Will it have access to the outer variables from its creation place, or the invocation place, or both?</p><p id="27416635-bfd9-42d9-af0e-83181ac965b8" class=""><code>function makeWorker() {
+  let name = &quot;Pete&quot;;
+
+  return function() {
+    alert(name);
+  };
+}
+
+let name = &quot;John&quot;;
+
+// create a function
+let work = makeWorker();
+
+// call it
+work(); // what will it show?</code></p><p id="3fa3df9f-e53b-4521-ab67-076b272d6469" class="">Which value it will show? “Pete” or “John”?</p><p id="b697b614-4398-4eb0-8aff-95ce52f8668d" class="">solution</p><p id="ed0bd40a-e539-43a5-aab3-b97cf9d9119e" class=""><a href="https://javascript.info/closure#are-counters-independent"><strong><strong>Are counters independent?</strong></strong></a></p><p id="6d6013ef-6c72-411d-bb26-4a15ecfcb75a" class="">importance: 5</p><p id="f45be757-b667-4a3e-96c7-ec0d195b325b" class="">Here we make two counters: <code>counter</code> and <code>counter2</code> using the same <code>makeCounter</code> function.</p><p id="b7ca5bfd-df60-46cd-bc8e-b6bb28db857f" class="">Are they independent? What is the second counter going to show? <code>0,1</code> or <code>2,3</code> or something else?</p><p id="69bf6c88-cc26-4b9b-a1f8-30622dda120b" class=""><code>function makeCounter() {
+  let count = 0;
+
+  return function() {
+    return count++;
+  };
+}
+
+let counter = makeCounter();
+let counter2 = makeCounter();
+
+alert( counter() ); // 0
+alert( counter() ); // 1
+
+</code><code><em>alert( counter2() ); // ?
+alert( counter2() ); // ?</em></code></p><p id="6636e705-a58f-4473-af6f-172502aac563" class="">solution</p><p id="56cf60e0-4201-4348-b8f6-ce261b74200f" class=""><a href="https://javascript.info/closure#counter-object"><strong><strong>Counter object</strong></strong></a></p><p id="e0dc8638-9068-4d7a-bc39-d8958825054c" class="">importance: 5</p><p id="f6c4626d-b3d8-4caf-b00f-ac1289f8f44e" class="">Here a counter object is made with the help of the constructor function.</p><p id="f9010022-207d-4593-9f21-8fd9a0337d84" class="">Will it work? What will it show?</p><p id="cc8dd15d-fb68-4721-83f1-d47729d4151d" class=""><code>function Counter() {
+  let count = 0;
+
+  this.up = function() {
+    return ++count;
+  };
+  this.down = function() {
+    return --count;
+  };
+}
+
+let counter = new Counter();
+
+alert( counter.up() ); // ?
+alert( counter.up() ); // ?
+alert( counter.down() ); // ?</code></p><p id="bd2fc017-3b87-491f-af17-eb60368a33a0" class="">solution</p><p id="c0b0af31-ffc3-440d-b296-2bdea8fbbe54" class=""><a href="https://javascript.info/closure#function-in-if"><strong><strong>Function in if</strong></strong></a></p><p id="6766fb51-9c47-403c-bc13-572972dccd85" class="">importance: 5</p><p id="b0712432-ba64-43be-9169-fe9621b84ccb" class="">Look at the code. What will be the result of the call at the last line?</p><p id="7b1d2419-daa9-41eb-8c3e-d82c5acf58a2" class=""><code>let phrase = &quot;Hello&quot;;
+
+if (true) {
+  let user = &quot;John&quot;;
+
+  function sayHi() {
+    alert(`${phrase}, ${user}`);
+  }
+}
+
+</code><code><em>sayHi();</em></code></p><p id="65016b10-be21-4be3-925a-3d6f6ac1fa6a" class="">solution</p><p id="ec9037a0-e5b8-48c3-bdd3-c1edbce252f0" class=""><a href="https://javascript.info/closure#sum-with-closures"><strong><strong>Sum with closures</strong></strong></a></p><p id="2919f0bc-c0b9-4954-97f0-1f24b0ad70b1" class="">importance: 4</p><p id="6b4ebb08-9328-47de-a2f5-34847259b4d1" class="">Write function <code>sum</code> that works like this: <code>sum(a)(b) = a+b</code>.</p><p id="bf60e78a-28ea-46d2-a01d-477d29911f64" class="">Yes, exactly this way, using double parentheses (not a mistype).</p><p id="12260cb9-66c0-495c-b23e-297f0d28974d" class="">For instance:</p><p id="836880b8-8e0c-4da2-a6b0-899b007032b4" class=""><code>sum(1)(2) = 3
+sum(5)(-1) = 4</code></p><p id="c7048bdb-c2f8-484d-8e51-2902a82dc5a8" class="">solution</p><p id="31ea0369-79a7-4482-9ff9-f90696122cf2" class=""><a href="https://javascript.info/closure#is-variable-visible"><strong><strong>Is variable visible?</strong></strong></a></p><p id="0b17217f-ec93-41ad-8d95-e33c8a77ab54" class="">importance: 4</p><p id="9bd7a0c6-f7d1-47ad-a4b4-27564ee3ead6" class="">What will be the result of this code?</p><p id="7789ab46-5d51-4d88-98bc-3d0a7c89d4ec" class=""><code>let x = 1;
+
+function func() {
+  console.log(x); // ?
+
+  let x = 2;
+}
+
+func();</code></p><p id="eee9dbd8-2c1a-45be-8e07-9507657b9b64" class="">P.S. There’s a pitfall in this task. The solution is not obvious.</p><p id="7cac8ad1-ae23-4d87-9f33-34e7cd95bd10" class="">solution</p><p id="929078c8-9a66-4d99-a61b-d0d4e06a7cd8" class=""><a href="https://javascript.info/closure#filter-through-function"><strong><strong>Filter through function</strong></strong></a></p><p id="863bd7da-c696-4e0f-9893-dc8b12368574" class="">importance: 5</p><p id="6516335c-b990-44bd-af6b-67fe5a012ec6" class="">We have a built-in method <code>arr.filter(f)</code> for arrays. It filters all elements through the function <code>f</code>. If it returns <code>true</code>, then that element is returned in the resulting array.</p><p id="397f6155-279d-419a-8703-abdc80797392" class="">Make a set of “ready to use” filters:</p><ul id="50e1bf8e-1ca0-4ea8-ae6a-d1d281332672" class="bulleted-list"><li style="list-style-type:disc"><code>inBetween(a, b)</code> – between <code>a</code> and <code>b</code> or equal to them (inclusively).</li></ul><ul id="5ff18fdd-c87a-41d5-8aad-63d9286eec34" class="bulleted-list"><li style="list-style-type:disc"><code>inArray([...])</code> – in the given array.</li></ul><p id="2235e0ef-8f94-4982-8010-b40430293c04" class="">The usage must be like this:</p><ul id="da1c4ce7-ec55-462f-a360-1180ffa10584" class="bulleted-list"><li style="list-style-type:disc"><code>arr.filter(inBetween(3,6))</code> – selects only values between 3 and 6.</li></ul><ul id="c5c55071-8fa9-42e6-b0d3-c0528009ab2b" class="bulleted-list"><li style="list-style-type:disc"><code>arr.filter(inArray([1,2,3]))</code> – selects only elements matching with one of the members of <code>[1,2,3]</code>.</li></ul><p id="3fb5d050-803f-4718-9a3e-cff6da3ec928" class="">For instance:</p><p id="666064c8-1217-4051-a755-022210482f5a" class=""><code>/* .. your code for inBetween and inArray */
+let arr = [1, 2, 3, 4, 5, 6, 7];
+
+alert( arr.filter(inBetween(3, 6)) ); // 3,4,5,6
+
+alert( arr.filter(inArray([1, 2, 10])) ); // 1,2</code></p><p id="87d1e211-a0ea-4b2c-992b-d4c67fe391cf" class=""><a href="https://plnkr.co/edit/TYqFVjCctR5V4gpt?p=preview">Open a sandbox with tests.</a></p><p id="78a13f8e-53de-49b8-b462-6197622a9956" class="">solution</p><p id="1e20e32a-1723-4ce3-bef5-5205e18a7bc6" class=""><a href="https://javascript.info/closure#sort-by-field"><strong><strong>Sort by field</strong></strong></a></p><p id="d940a9b7-05f0-4082-aaa5-bbf0a898e416" class="">importance: 5</p><p id="611959ff-77ef-402f-ad96-79819558facf" class="">We’ve got an array of objects to sort:</p><p id="7905e5f0-9178-4735-a979-be5299792e15" class=""><code>let users = [
+  { name: &quot;John&quot;, age: 20, surname: &quot;Johnson&quot; },
+  { name: &quot;Pete&quot;, age: 18, surname: &quot;Peterson&quot; },
+  { name: &quot;Ann&quot;, age: 19, surname: &quot;Hathaway&quot; }
+];</code></p><p id="119a9bb4-c37c-41de-af74-62c3f58205f5" class="">The usual way to do that would be:</p><p id="8d6f814a-528a-4ace-9654-8abd0f288fe4" class=""><code>// by name (Ann, John, Pete)
+users.sort((a, b) =&gt; a.name &gt; b.name ? 1 : -1);
+
+// by age (Pete, Ann, John)
+users.sort((a, b) =&gt; a.age &gt; b.age ? 1 : -1);</code></p><p id="f8e51a42-4988-4629-a412-bd066d35a806" class="">Can we make it even less verbose, like this?</p><p id="4bb129c4-2529-4b42-b3df-7b3a3d23f1fb" class=""><code>users.sort(byField(&#x27;name&#x27;));
+users.sort(byField(&#x27;age&#x27;));</code></p><p id="8ff7f2bc-ea23-4399-954d-4066ac8260f4" class="">So, instead of writing a function, just put <code>byField(fieldName)</code>.</p><p id="cda69513-1ab7-4432-b61f-1eb8e97c4bb7" class="">Write the function <code>byField</code> that can be used for that.</p><p id="ff8ebd00-669e-43b2-af33-f5c594370800" class=""><a href="https://plnkr.co/edit/0P3dSp25O5mu9Sq7?p=preview">Open a sandbox with tests.</a></p><p id="37886d4a-273b-403e-89a1-426a6fbb2f15" class="">solution</p><p id="9f00900b-e491-40b2-b4a1-308117834463" class=""><a href="https://javascript.info/closure#army-of-functions"><strong><strong>Army of functions</strong></strong></a></p><p id="f895ebbe-d0de-493b-9270-95ac5f4ebd7b" class="">importance: 5</p><p id="98a74914-a838-4704-b03b-1b02df4e6ccd" class="">The following code creates an array of <code>shooters</code>.</p><p id="460f4a6e-c730-457f-8f0d-339e9efc357b" class="">Every function is meant to output its number. But something is wrong…</p><p id="6e341bbc-6607-4749-bd6b-76276f1e6d6d" class=""><code>function makeArmy() {
+  let shooters = [];
+
+  let i = 0;
+  while (i &lt; 10) {
+    let shooter = function() { // create a shooter function,
+      alert( i ); // that should show its number
+    };
+    shooters.push(shooter); // and add it to the array
+    i++;
+  }
+
+  // ...and return the array of shooters
+  return shooters;
+}
+
+let army = makeArmy();
+
+</code><code><em>// all shooters show 10 instead of their numbers 0, 1, 2, 3...
+army[0](); // 10 from the shooter number 0
+army[1](); // 10 from the shooter number 1
+army[2](); // 10 ...and so on.</em></code></p></div></article></body></html>
